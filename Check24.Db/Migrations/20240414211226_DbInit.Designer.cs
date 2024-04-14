@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Check24.Db.Migrations
 {
     [DbContext(typeof(Check24Context))]
-    [Migration("20240413231612_changedpk")]
-    partial class changedpk
+    [Migration("20240414211226_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,16 +28,17 @@ namespace Check24.Db.Migrations
             modelBuilder.Entity("Check24.Core.Entities.Bet", b =>
                 {
                     b.Property<Guid>("BetId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("AwayTeamGoals")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("BetTimestamp")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("GameId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("HomeTeamGoals")
                         .HasColumnType("int");
@@ -45,8 +46,7 @@ namespace Check24.Db.Migrations
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("BetId")
-                        .HasName("PK__Bets__454024890E793E80");
+                    b.HasKey("BetId");
 
                     b.HasIndex("GameId");
 
@@ -58,43 +58,42 @@ namespace Check24.Db.Migrations
             modelBuilder.Entity("Check24.Core.Entities.Community", b =>
                 {
                     b.Property<Guid>("CommunityId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CommunityName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CommunityId")
-                        .HasName("PK__Communit__CCAA5B69291F2E5F");
+                    b.HasKey("CommunityId");
 
                     b.ToTable("Communities");
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.Game", b =>
                 {
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("GameId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AwayTeam")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GameId"));
 
-                    b.Property<DateTime?>("GameDateTime")
-                        .HasColumnType("datetime");
+                    b.Property<DateTime>("GameStartsAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("GameStatus")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("HomeTeam")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("GameId")
-                        .HasName("PK__Games__2AB897FDE4264D3A");
+                    b.Property<string>("TeamAwayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeamHomeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GameId");
 
                     b.ToTable("Games");
                 });
@@ -102,42 +101,38 @@ namespace Check24.Db.Migrations
             modelBuilder.Entity("Check24.Core.Entities.User", b =>
                 {
                     b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Points")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RegistrationDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId")
-                        .HasName("PK__Users__1788CC4CEE4C52B1");
+                    b.HasKey("UserId");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.UserCommunity", b =>
                 {
-                    b.Property<Guid>("UserCommunityId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CommunityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserCommunityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserCommunityId")
-                        .HasName("PK__UserComm__3781934CA42845C8");
+                    b.HasKey("UserId", "CommunityId");
 
                     b.HasIndex("CommunityId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserCommunities");
                 });
@@ -147,12 +142,12 @@ namespace Check24.Db.Migrations
                     b.HasOne("Check24.Core.Entities.Game", "Game")
                         .WithMany("Bets")
                         .HasForeignKey("GameId")
-                        .HasConstraintName("FK__Bets__GameId__70DDC3D8");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Check24.Core.Entities.User", "User")
                         .WithMany("Bets")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("FK__Bets__UserId__6FE99F9F");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Game");
 
@@ -164,12 +159,14 @@ namespace Check24.Db.Migrations
                     b.HasOne("Check24.Core.Entities.Community", "Community")
                         .WithMany("UserCommunities")
                         .HasForeignKey("CommunityId")
-                        .HasConstraintName("FK__UserCommu__Commu__619B8048");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Check24.Core.Entities.User", "User")
                         .WithMany("UserCommunities")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK__UserCommu__UserI__60A75C0F");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Community");
 

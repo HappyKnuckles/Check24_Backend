@@ -1,20 +1,20 @@
-﻿using Check24.Core.Entities;
-using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Check24.Core.Entities
+namespace Check24.Core.Entities;
+
+public partial class UserCommunity
 {
+    [Key]
+    public Guid UserCommunityId { get; set; }
 
-    public partial class UserCommunity
-    {
-        public Guid UserCommunityId { get; set; }
+    [ForeignKey("User")]
+    public Guid? UserId { get; set; }
 
-        public Guid? UserId { get; set; }
+    [ForeignKey("Community")]
+    public Guid? CommunityId { get; set; }
 
-        public Guid? CommunityId { get; set; }
+    public Community? Community { get; set; }
 
-        public virtual Community? Community { get; set; }
-
-        public virtual User? User { get; set; }
-    }
+    public User? User { get; set; }
 }

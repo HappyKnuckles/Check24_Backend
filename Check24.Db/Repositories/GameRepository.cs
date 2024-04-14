@@ -6,5 +6,6 @@ namespace Check24.Db.Repositories
     public class GameRepository : Repository<Game>, IGameRepository
     {
         public GameRepository(Check24Context context) : base(context) { }
+
     }
 }

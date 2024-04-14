@@ -1,4 +1,5 @@
 ﻿using Check24.Core.Interfaces;
+using Check24.Db;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

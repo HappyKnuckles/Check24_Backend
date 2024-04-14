@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Check24.Db.Migrations
 {
     /// <inheritdoc />
-    public partial class changedpk : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,26 +16,27 @@ namespace Check24.Db.Migrations
                 columns: table => new
                 {
                     CommunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CommunityName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    CommunityName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Communit__CCAA5B69291F2E5F", x => x.CommunityId);
+                    table.PrimaryKey("PK_Communities", x => x.CommunityId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Games",
                 columns: table => new
                 {
-                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    HomeTeam = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AwayTeam = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    GameDateTime = table.Column<DateTime>(type: "datetime", nullable: true),
-                    GameStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    GameId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TeamHomeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TeamAwayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameStartsAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GameStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Games__2AB897FDE4264D3A", x => x.GameId);
+                    table.PrimaryKey("PK_Games", x => x.GameId);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,13 +44,13 @@ namespace Check24.Db.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Points = table.Column<int>(type: "int", nullable: true),
-                    RegistrationDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Users__1788CC4CEE4C52B1", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,21 +59,22 @@ namespace Check24.Db.Migrations
                 {
                     BetId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GameId = table.Column<int>(type: "int", nullable: false),
                     HomeTeamGoals = table.Column<int>(type: "int", nullable: true),
                     AwayTeamGoals = table.Column<int>(type: "int", nullable: true),
-                    BetTimestamp = table.Column<DateTime>(type: "datetime", nullable: true)
+                    BetTimestamp = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Bets__454024890E793E80", x => x.BetId);
+                    table.PrimaryKey("PK_Bets", x => x.BetId);
                     table.ForeignKey(
-                        name: "FK__Bets__GameId__70DDC3D8",
+                        name: "FK_Bets_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
-                        principalColumn: "GameId");
+                        principalColumn: "GameId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__Bets__UserId__6FE99F9F",
+                        name: "FK_Bets_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId");
@@ -82,23 +84,25 @@ namespace Check24.Db.Migrations
                 name: "UserCommunities",
                 columns: table => new
                 {
-                    UserCommunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CommunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CommunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserCommunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__UserComm__3781934CA42845C8", x => x.UserCommunityId);
+                    table.PrimaryKey("PK_UserCommunities", x => new { x.UserId, x.CommunityId });
                     table.ForeignKey(
-                        name: "FK__UserCommu__Commu__619B8048",
+                        name: "FK_UserCommunities_Communities_CommunityId",
                         column: x => x.CommunityId,
                         principalTable: "Communities",
-                        principalColumn: "CommunityId");
+                        principalColumn: "CommunityId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK__UserCommu__UserI__60A75C0F",
+                        name: "FK_UserCommunities_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -115,11 +119,6 @@ namespace Check24.Db.Migrations
                 name: "IX_UserCommunities_CommunityId",
                 table: "UserCommunities",
                 column: "CommunityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserCommunities_UserId",
-                table: "UserCommunities",
-                column: "UserId");
         }
 
         /// <inheritdoc />

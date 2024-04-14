@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace Check24.Core.Entities
+namespace Check24.Core.Entities;
+
+public partial class Game
 {
+    public string TeamHomeName { get; set; } = null!;
 
-    public partial class Game
-    {
-        public Guid GameId { get; set; }
+    public string TeamAwayName { get; set; } = null!;
 
-        public string HomeTeam { get; set; } = null!;
+    public DateTime GameStartsAt { get; set; }
 
-        public string AwayTeam { get; set; } = null!;
+    [Key]
+    public int GameId { get; set; }
 
-        public DateTime? GameDateTime { get; set; }
+    public string? GameStatus { get; set; }
+    public List<Bet> Bets { get; set; }
 
-        public string? GameStatus { get; set; }
-
-        public virtual ICollection<Bet> Bets { get; set; } = new List<Bet>();
-    }
 }
