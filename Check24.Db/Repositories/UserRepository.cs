@@ -1,4 +1,4 @@
-﻿using Check24.Core;
+using Check24.Core;
 using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -49,9 +49,9 @@ namespace Check24.Db.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> GetUserRank(User user)
+        public async Task<int> GetUserRank(string userName)
         {
-            var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+            var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
             return rankedUser?.Rank ?? 0;
         }
 
