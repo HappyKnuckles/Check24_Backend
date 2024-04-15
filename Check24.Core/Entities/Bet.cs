@@ -11,7 +11,7 @@ public partial class Bet
     public Guid BetId { get; set; }
 
     [ForeignKey("User")]
-    public Guid? UserId { get; set; }
+    public Guid UserId { get; set; }
 
     [ForeignKey("Game")]
     public int GameId { get; set; }
@@ -22,7 +22,7 @@ public partial class Bet
 
     public DateTime? BetTimestamp { get; set; }
 
-    public User? User { get; set; }
+    public User User { get; set; }
 
     public Game Game { get; set; }
 

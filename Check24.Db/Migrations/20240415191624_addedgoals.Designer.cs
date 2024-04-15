@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Check24.Db.Migrations
 {
     [DbContext(typeof(Check24Context))]
-    [Migration("20240415102416_adjustedentities")]
-    partial class adjustedentities
+    [Migration("20240415191624_addedgoals")]
+    partial class addedgoals
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,12 +87,15 @@ namespace Check24.Db.Migrations
                     b.Property<string>("GameStatus")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsBettable")
-                        .HasColumnType("bit");
+                    b.Property<int>("TeamAwayGoals")
+                        .HasColumnType("int");
 
                     b.Property<string>("TeamAwayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TeamHomeGoals")
+                        .HasColumnType("int");
 
                     b.Property<string>("TeamHomeName")
                         .IsRequired()
@@ -110,9 +113,6 @@ namespace Check24.Db.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("Points")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rank")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("RegistrationDate")

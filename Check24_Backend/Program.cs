@@ -9,7 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<Check24Context>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("Check24DB")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Check24DB"), sqlServerOptions =>
+    {
+        sqlServerOptions.EnableRetryOnFailure();
+    }));
 
 
 

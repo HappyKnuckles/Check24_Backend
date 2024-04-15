@@ -13,5 +13,5 @@ public partial class Community
     public string CommunityName { get; set; } = null!;
     public int CommunityPoints { get; set; }
 
-    public List<UserCommunity> UserCommunities { get; set; }
+    public List<UserCommunity>? UserCommunities { get; set; }
 }

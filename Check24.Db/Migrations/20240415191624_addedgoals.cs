@@ -5,24 +5,24 @@
 namespace Check24.Db.Migrations
 {
     /// <inheritdoc />
-    public partial class adjustedentities : Migration
+    public partial class addedgoals : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "Rank",
-                table: "Users",
+                name: "TeamAwayGoals",
+                table: "Games",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsBettable",
+            migrationBuilder.AddColumn<int>(
+                name: "TeamHomeGoals",
                 table: "Games",
-                type: "bit",
+                type: "int",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "CommunityPoints",
@@ -36,11 +36,11 @@ namespace Check24.Db.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Rank",
-                table: "Users");
+                name: "TeamAwayGoals",
+                table: "Games");
 
             migrationBuilder.DropColumn(
-                name: "IsBettable",
+                name: "TeamHomeGoals",
                 table: "Games");
 
             migrationBuilder.DropColumn(

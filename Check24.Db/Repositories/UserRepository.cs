@@ -11,59 +11,73 @@ namespace Check24.Db.Repositories
 
         public UserRepository(Check24Context context) : base(context) { }
 
-        public async Task CreateNewUser(string userName)
-        {
-            userName = userName.ToLower();
-
-            if(await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName) != null)
-            {
-                throw new CustomException("User already exists");
-            }
-
-            User user = new()
-            {
-                Username = userName,
-                RegistrationDate = DateTime.Now
-            };
-            await _context.AddAsync(user);
-            await _context.SaveChangesAsync();
-            await Login(userName);
-        }
-
         public async Task<User?> Login(string userName)
         {
-            return await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName);
-        }
-
-        public async Task SetRankings()
-        {
-            var rankedUsers = await _context.Users
-                .OrderByDescending(u => u.Points) 
-                .ToListAsync();
-
-            for (int i = 0; i < rankedUsers.Count; i++)
+            var loggedInUser = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName.ToLower());
+            if (loggedInUser != null)
             {
-                rankedUsers[i].Rank = i + 1;
+                return loggedInUser;
             }
-
-            await _context.SaveChangesAsync();
+            else throw new CustomException("Kein Nutzer gefunden");
         }
 
-        public async Task<int> GetUserRank(string userName)
+        public async Task<User> GetUserRank(string userName)
         {
+
             var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName.ToLower());
-            return rankedUser?.Rank ?? 0;
+            if (rankedUser != null)
+            {
+                return rankedUser;
+            }
+            else throw new CustomException("Spieler nicht gefunden");
         }
 
         public async Task<List<User>> GetLeaderboard()
         {
-            return await _context.Users.OrderByDescending(u => u.Rank).ToListAsync();
+            return await _context.Users.OrderByDescending(u => u.Points).ToListAsync();
         }
 
-
-        public async void GetFriendsByUserId(Guid id)
+        public int CalculatePointsForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
         {
-            
+            int points = 0;
+
+            if (bet.HomeTeamGoals == homeTeamGoals && bet.AwayTeamGoals == awayTeamGoals)
+            {
+                points = 8;
+            }
+            else if (bet.HomeTeamGoals - bet.AwayTeamGoals == Math.Abs(homeTeamGoals - awayTeamGoals) && homeTeamGoals != awayTeamGoals)
+            {
+                points = 6;
+            }
+            else if ((bet.HomeTeamGoals > bet.AwayTeamGoals && homeTeamGoals > awayTeamGoals) ||
+                     (bet.HomeTeamGoals == bet.AwayTeamGoals && homeTeamGoals == awayTeamGoals) ||
+                     (bet.HomeTeamGoals < bet.AwayTeamGoals && homeTeamGoals < awayTeamGoals))
+            {
+                points = 4;
+            }
+            else
+            {
+                points = 0;
+            }
+
+            return points;
         }
+        public async Task UpdatePointsForGameResult(Game game)
+        {
+            int homeTeamGoals = (int)game.TeamHomeGoals;
+            int awayTeamGoals = (int)game.TeamAwayGoals;
+
+            foreach (var bet in game.Bets)
+            {
+                int points = CalculatePointsForBet(bet, homeTeamGoals, awayTeamGoals);
+
+                bet.User!.Points += points;
+
+                _context.Entry(bet.User).State = EntityState.Modified;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

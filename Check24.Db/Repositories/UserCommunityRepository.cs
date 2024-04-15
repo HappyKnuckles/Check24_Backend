@@ -9,9 +9,9 @@ namespace Check24.Db.Repositories
 
         public UserCommunityRepository(Check24Context context) : base(context) { }
 
-        public async Task<List<UserCommunity>> ShowAllUserCommunities(User user)
+        public async Task<List<UserCommunity>> ShowAllUserCommunities(Guid userId)
         {
-            var allCommunities = await _context.UserCommunities.Where(x => x.User == user).ToListAsync();
+            var allCommunities = await _context.UserCommunities.Where(x => x.User.UserId == userId).ToListAsync();
             return allCommunities;
         }
     }

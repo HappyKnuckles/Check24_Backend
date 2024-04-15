@@ -1,4 +1,5 @@
-﻿using Check24.Core.Interfaces;
+﻿using Check24.Core.Entities;
+using Check24.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Check24.Api.Controllers
@@ -12,5 +13,35 @@ namespace Check24.Api.Controllers
         {
             _repo = repo;
         }
+
+        [HttpGet("show-user-communities")]
+        public async Task<List<UserCommunity>> ShowAllUserCommunities(Guid userId)
+        {
+            return await _repo.ShowAllUserCommunities(userId);
+        }
+
+        [HttpPost]
+        public async Task<UserCommunity> Add([FromBody] UserCommunity userCommunity)
+        {
+            return await _repo.Add(userCommunity);
+        }
+        [HttpGet]
+        public async Task<List<UserCommunity>> ListAll()
+        {
+            return await _repo.ListAll();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task Delete(Guid id)
+        {
+            await _repo.Delete(id);
+        }
+
+        [HttpPut]
+        public async Task Update([FromBody] UserCommunity userCommunity)
+        {
+            await _repo.Update(userCommunity);
+        }
+
     }
 }

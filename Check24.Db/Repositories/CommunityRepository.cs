@@ -10,28 +10,18 @@ namespace Check24.Db.Repositories
 
         public CommunityRepository(Check24Context context) : base(context) { }
 
-        public async Task CreateCommunity(string communityName, User user)
+        public async Task JoinCommunity(Guid userId, Guid communityId)
         {
-            Community community = new()
-            {
-                CommunityName = communityName.ToLower(),
-            };
-            await _context.AddAsync(community);
-            await _context.SaveChangesAsync();
-            await JoinCommunity(user, community);
-        }
-
-        public async Task JoinCommunity(User user, Community community)
-        {
-            if(user.UserCommunities.Count >= 5)
-            {
-                throw new CustomException("Too many communites");
-            }
+            var user = _context.Users.Where(u => u.UserId == userId).FirstOrDefault();
+            var community = _context.Communities.Where(c => c.CommunityId == communityId).FirstOrDefault();
             if (user == null || community == null)
             {
                 throw new CustomException("User or community cannot be null");
             }
-
+            if (user.UserCommunities.Count >= 5)
+            {
+                throw new CustomException("Too many communites");
+            }
             if (user.UserCommunities.Any(uc => uc.CommunityId == community.CommunityId))
             {
                 throw new CustomException("User is already part of the community");
@@ -40,14 +30,15 @@ namespace Check24.Db.Repositories
             var userCommunity = new UserCommunity
             {
                 User = user,
-                Community = community
+                Community = community,
+                UserCommunityId = new Guid() 
             };
 
             user.UserCommunities.Add(userCommunity);
-            await GetCommunityPoints(community);
+            await SetCommunityPoints(community);
             await _context.SaveChangesAsync();
         }
-        public async Task GetCommunityPoints(Community community)
+        public async Task SetCommunityPoints(Community community)
         {
             var communityPoints = await _context.UserCommunities
                 .Where(uc => uc.CommunityId == community.CommunityId)
@@ -56,15 +47,15 @@ namespace Check24.Db.Repositories
             community.CommunityPoints = communityPoints;
         }
 
-        public async Task<List<User>> GetCommunityUserRanking(Community community)
+        public async Task<List<User>> GetCommunityUserRanking(Guid communityId)
         {
             var userRankings = await _context.UserCommunities
-                .Where(uc => uc.CommunityId == community.CommunityId) // Filter users by community
+                .Where(uc => uc.CommunityId == communityId) 
                 .Select(uc => uc.User)
-                .OrderByDescending(u => u.Points) // Order users by points in descending order
+                .OrderByDescending(u => u.Points) 
                 .ToListAsync();
 
-            return userRankings;
+            return userRankings!;
         }
 
     }

@@ -11,12 +11,13 @@ public partial class Game
     public string TeamAwayName { get; set; } = null!;
 
     public DateTime GameStartsAt { get; set; }
+    public int? TeamAwayGoals { get; set; }
+    public int? TeamHomeGoals { get; set; }
 
     [Key]
     public int GameId { get; set; }
-    public bool IsBettable { get; set; } = true;
 
     public string? GameStatus { get; set; }
-    public List<Bet> Bets { get; set; }
+    public List<Bet>? Bets { get; set; }
 
 }

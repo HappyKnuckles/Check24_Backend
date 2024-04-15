@@ -12,9 +12,8 @@ public partial class User
     public string Username { get; set; } = null!;
 
     public int? Points { get; set; }
-    public int Rank {  get; set; }
 
-    public DateTime? RegistrationDate { get; set; }
+    public DateTime RegistrationDate { get; set; }
 
     public virtual ICollection<Bet> Bets { get; set; } = new List<Bet>();
 
