@@ -11,6 +11,7 @@ public partial class Community
     public Guid CommunityId { get; set; }
 
     public string CommunityName { get; set; } = null!;
+    public int CommunityPoints { get; set; }
 
     public List<UserCommunity> UserCommunities { get; set; }
 }

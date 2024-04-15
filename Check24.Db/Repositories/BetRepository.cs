@@ -34,6 +34,5 @@ namespace Check24.Db.Repositories
             await _context.AddAsync(bet);
             await _context.SaveChangesAsync();
         }
-
     }
 }

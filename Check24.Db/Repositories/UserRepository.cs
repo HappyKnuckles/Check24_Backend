@@ -35,6 +35,32 @@ namespace Check24.Db.Repositories
             return await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName);
         }
 
+        public async Task SetRankings()
+        {
+            var rankedUsers = await _context.Users
+                .OrderByDescending(u => u.Points) 
+                .ToListAsync();
+
+            for (int i = 0; i < rankedUsers.Count; i++)
+            {
+                rankedUsers[i].Rank = i + 1;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetUserRank(User user)
+        {
+            var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+            return rankedUser?.Rank ?? 0;
+        }
+
+        public async Task<List<User>> GetLeaderboard()
+        {
+            return await _context.Users.OrderByDescending(u => u.Rank).ToListAsync();
+        }
+
+
         public async void GetFriendsByUserId(Guid id)
         {
             

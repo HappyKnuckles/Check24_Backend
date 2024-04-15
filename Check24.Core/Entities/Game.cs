@@ -14,6 +14,7 @@ public partial class Game
 
     [Key]
     public int GameId { get; set; }
+    public bool IsBettable { get; set; } = true;
 
     public string? GameStatus { get; set; }
     public List<Bet> Bets { get; set; }
