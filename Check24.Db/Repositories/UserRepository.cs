@@ -51,7 +51,7 @@ namespace Check24.Db.Repositories
 
         public async Task<int> GetUserRank(string userName)
         {
-            var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+            var rankedUser = await _context.Users.FirstOrDefaultAsync(x => x.Username.ToLower() == userName.ToLower());
             return rankedUser?.Rank ?? 0;
         }
 
