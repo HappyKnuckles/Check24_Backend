@@ -18,6 +18,6 @@ public partial class Game
     public int GameId { get; set; }
 
     public string? GameStatus { get; set; }
-    public List<Bet>? Bets { get; set; }
+    public virtual ICollection<Bet> Bets { get; set; } = new List<Bet>();
 
 }
