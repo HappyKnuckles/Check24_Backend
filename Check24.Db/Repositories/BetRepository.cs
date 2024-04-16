@@ -10,28 +10,27 @@ namespace Check24.Db.Repositories
     {
         public BetRepository(Check24Context context) : base(context) { }
 
-        public async Task PlaceBet(Game game, Bet bet, User user)
+        public async Task PlaceBet(int homeGoals, int awayGoals, int gameId, Guid userId)
         {
-
-            if (game == null || bet == null || user == null)
+            Bet bet = new()
             {
-                throw new CustomException("Game, Bet, or User cannot be null");
-            }
+                BetId = Guid.NewGuid(),
+                HomeTeamGoals = homeGoals,
+                AwayTeamGoals = awayGoals,
+                GameId = gameId,
+                UserId = userId
+            };
 
-            if (bet.User != null && bet.User.UserId != user.UserId)
-            {
-                throw new CustomException("User mismatch: The provided user does not match the user associated with the bet");
-            }
+            var game = await _context.Games.FindAsync(gameId) ?? throw new InvalidOperationException("The specified game does not exist.");
+            var user = await _context.Users.FindAsync(userId) ?? throw new InvalidOperationException("The specified user does not exist.");
 
-            if (bet.Game != null && bet.Game.GameId != game.GameId)
-            {
-                throw new CustomException("Game mismatch: The provided game does not match the game associated with the bet");
-            }
+            game.Bets.Add(bet);
 
-            bet.User = user;
             bet.Game = game;
+            bet.User = user; 
 
-            await _context.AddAsync(bet);
+            user.Bets.Add(bet);
+            _context.Bets.Add(bet);
             await _context.SaveChangesAsync();
         }
     }

@@ -49,7 +49,7 @@ namespace Check24.Db.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bets");
+                    b.ToTable("Bets", (string)null);
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.Community", b =>
@@ -67,7 +67,7 @@ namespace Check24.Db.Migrations
 
                     b.HasKey("CommunityId");
 
-                    b.ToTable("Communities");
+                    b.ToTable("Communities", (string)null);
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.Game", b =>
@@ -100,7 +100,7 @@ namespace Check24.Db.Migrations
 
                     b.HasKey("GameId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.User", b =>
@@ -121,7 +121,7 @@ namespace Check24.Db.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.UserCommunity", b =>
@@ -139,7 +139,7 @@ namespace Check24.Db.Migrations
 
                     b.HasIndex("CommunityId");
 
-                    b.ToTable("UserCommunities");
+                    b.ToTable("UserCommunities", (string)null);
                 });
 
             modelBuilder.Entity("Check24.Core.Entities.Bet", b =>

@@ -37,17 +37,11 @@ namespace Check24.Api.Controllers
         {
             await _repo.Update(bet);
         }
-        public class BetInputModel
-        {
-            public Game Game { get; set; }
-            public Bet Bet { get; set; }
-            public User User { get; set; }
-        }
 
         [HttpPost("place-bet")]
-        public async Task PlaceBet([FromBody] BetInputModel betInput)
+        public async Task PlaceBet(int homeGoals, int awayGoals, int gameId, Guid userId)
         {
-            await _repo.PlaceBet(betInput.Game, betInput.Bet, betInput.User);
+            await _repo.PlaceBet(homeGoals, awayGoals, gameId, userId);
         }
     }
 }
