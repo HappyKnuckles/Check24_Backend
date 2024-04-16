@@ -31,7 +31,10 @@ builder.Services.AddTransient<IGameRepository, GameRepository>();
 builder.Services.AddTransient<IBetRepository, BetRepository>();
 builder.Services.AddHttpContextAccessor();
 
-
+builder.Services.AddCors(policyBuilder =>
+    policyBuilder.AddDefaultPolicy(policy =>
+        policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod())
+);
 
 var app = builder.Build();
 
@@ -42,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseCors();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
