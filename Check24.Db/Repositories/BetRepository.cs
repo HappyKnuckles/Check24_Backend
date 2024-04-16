@@ -2,6 +2,7 @@
 using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Check24.Db;
+using Microsoft.VisualBasic;
 using System.Runtime.InteropServices;
 
 namespace Check24.Db.Repositories
@@ -18,7 +19,8 @@ namespace Check24.Db.Repositories
                 HomeTeamGoals = homeGoals,
                 AwayTeamGoals = awayGoals,
                 GameId = gameId,
-                UserId = userId
+                UserId = userId,
+                BetTimestamp = DateTime.Now
             };
 
             var game = await _context.Games.FindAsync(gameId) ?? throw new InvalidOperationException("The specified game does not exist.");
