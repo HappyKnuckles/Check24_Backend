@@ -8,12 +8,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Check24.Api", "Check24_Back
 		{A8B93B2E-2468-4F52-95CB-50BD9ECCC458} = {A8B93B2E-2468-4F52-95CB-50BD9ECCC458}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Check24.Db", "Check24.Db\Check24.Db.csproj", "{A8B93B2E-2468-4F52-95CB-50BD9ECCC458}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Check24.Db", "Check24.Db\Check24.Db.csproj", "{A8B93B2E-2468-4F52-95CB-50BD9ECCC458}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9CB89E23-4AC2-4BA4-9B40-A39387E62DCD} = {9CB89E23-4AC2-4BA4-9B40-A39387E62DCD}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Check24.Core", "Check24.Core\Check24.Core.csproj", "{9CB89E23-4AC2-4BA4-9B40-A39387E62DCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Check24.Core", "Check24.Core\Check24.Core.csproj", "{9CB89E23-4AC2-4BA4-9B40-A39387E62DCD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
