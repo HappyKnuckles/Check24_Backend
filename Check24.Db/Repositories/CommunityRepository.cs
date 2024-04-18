@@ -42,7 +42,7 @@ namespace Check24.Db.Repositories
         {
             var communityPoints = await _context.UserCommunities
                 .Where(uc => uc.CommunityId == community.CommunityId)
-                .SumAsync(uc => uc.User.Points ?? 0);
+                .SumAsync(uc => uc.User!.Points ?? 0);
 
             community.CommunityPoints = communityPoints;
         }
@@ -52,7 +52,8 @@ namespace Check24.Db.Repositories
             var userRankings = await _context.UserCommunities
                 .Where(uc => uc.CommunityId == communityId) 
                 .Select(uc => uc.User)
-                .OrderByDescending(u => u.Points) 
+                .OrderByDescending(u => u.Points)
+                .ThenBy(u => u.RegistrationDate)
                 .ToListAsync();
 
             return userRankings!;

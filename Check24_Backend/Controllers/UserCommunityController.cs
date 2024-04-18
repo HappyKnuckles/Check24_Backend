@@ -1,4 +1,5 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Core.dtos;
+using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,9 @@ namespace Check24.Api.Controllers
         }
 
         [HttpGet("show-user-communities")]
-        public async Task<List<UserCommunity>> ShowAllUserCommunities(Guid userId)
+        public async Task<List<CommunityMembersDto>> GetUserCommunitiesWithOtherUsers(Guid userId)
         {
-            return await _repo.ShowAllUserCommunities(userId);
+            return await _repo.GetUserCommunitiesWithOtherUsers(userId);
         }
 
         [HttpPost]

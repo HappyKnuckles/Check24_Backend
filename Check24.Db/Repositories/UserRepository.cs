@@ -18,7 +18,17 @@ namespace Check24.Db.Repositories
             {
                 return loggedInUser;
             }
-            else throw new CustomException("Kein Nutzer gefunden");
+            else
+            {
+                User newUser = new()
+                {
+                    UserId = Guid.NewGuid(),
+                    Username = userName,
+                    RegistrationDate = DateTime.Now,
+                    Points = 0
+                };
+                return loggedInUser = await Add(newUser);
+            }
         }
 
         public async Task<User> GetUserRank(string userName)
@@ -34,7 +44,7 @@ namespace Check24.Db.Repositories
 
         public async Task<List<User>> GetLeaderboard()
         {
-            return await _context.Users.OrderByDescending(u => u.Points).ToListAsync();
+            return await _context.Users.OrderByDescending(u => u.Points).ThenBy(u => u.RegistrationDate).ToListAsync();
         }
 
         public int CalculatePointsForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
@@ -64,8 +74,8 @@ namespace Check24.Db.Repositories
         }
         public async Task UpdatePointsForGameResult(Game game)
         {
-            int homeTeamGoals = (int)game.TeamHomeGoals;
-            int awayTeamGoals = (int)game.TeamAwayGoals;
+            int homeTeamGoals = (int)game.TeamHomeGoals!;
+            int awayTeamGoals = (int)game.TeamAwayGoals!;
 
             foreach (var bet in game.Bets)
             {
