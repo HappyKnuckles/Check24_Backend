@@ -34,6 +34,7 @@ namespace Check24.Db.Repositories
                 communityMembers.Add(new CommunityMembersDto
                 {
                     CommunityId = community!.CommunityId,
+                    CommunityPoints = community.CommunityPoints,
                     CommunityName = community.CommunityName, 
                     Members = members!
                 });
