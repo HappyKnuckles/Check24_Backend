@@ -1,4 +1,5 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Core.dtos;
+using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Check24.Db.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -44,14 +45,14 @@ namespace Check24.Api.Controllers
         }
 
 
-        [HttpPut("{communityId}/points")]
+        [HttpPut("set-points")]
         public async Task SetCommunityPoints(Community community)
         {
             await _repo.SetCommunityPoints(community);
         }
 
-        [HttpGet("{communityId}/ranking")]
-        public async Task<List<User>> GetCommunityUserRanking(Guid communityId)
+        [HttpGet("ranking")]
+        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid communityId)
         {
             return await _repo.GetCommunityUserRanking(communityId);
         }

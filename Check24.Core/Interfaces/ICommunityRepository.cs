@@ -1,4 +1,5 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Core.dtos;
+using Check24.Core.Entities;
 
 namespace Check24.Core.Interfaces
 {
@@ -6,6 +7,6 @@ namespace Check24.Core.Interfaces
     {
         Task JoinCommunity(Guid userId, Guid communityId);
         Task SetCommunityPoints(Community community);
-        Task<List<User>> GetCommunityUserRanking(Guid communityId);
+        Task<CommunityMembersDto> GetCommunityUserRanking(Guid communityId);
     }
 }

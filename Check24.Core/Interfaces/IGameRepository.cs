@@ -4,5 +4,6 @@ namespace Check24.Core.Interfaces
 {
     public interface IGameRepository : IRepository<Game>
     {
+        Task<List<Game>> GetGamesWithoutBet(Guid userId);
     }
 }

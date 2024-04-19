@@ -1,4 +1,5 @@
 ﻿using Check24.Core.dtos;
+using Check24.Core.Dtos;
 using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -26,10 +27,17 @@ namespace Check24.Db.Repositories
                     .Where(c => c.CommunityId == communityId)
                     .FirstOrDefaultAsync();
 
-                var members = await _context.UserCommunities
+                var memberUsers = await _context.UserCommunities
                     .Where(uc => uc.CommunityId == communityId)
                     .Select(uc => uc.User)
                     .ToListAsync();
+
+                var members = memberUsers.Select(user => new UserDto
+                {
+                    Points = user.Points,
+                    Name = user.Username,
+                    RegistrationDate = user.RegistrationDate
+                }).ToList();
 
                 communityMembers.Add(new CommunityMembersDto
                 {

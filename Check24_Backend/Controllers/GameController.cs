@@ -37,5 +37,10 @@ namespace Check24.Api.Controllers
         {
             await _repo.Update(game);
         }
+        [HttpGet("games-without-bets")]
+        public async Task<List<Game>> GetGamesWithoutBet(Guid userId)
+        {
+            return await _repo.GetGamesWithoutBet(userId);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Core.Dtos;
+using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,8 +45,8 @@ namespace Check24.Api.Controllers
             await _repo.PlaceBet(homeGoals, awayGoals, gameId, userId);
         }
 
-        [HttpGet("{id}/bets")]
-        public async Task<List<Bet>> GetUserBets(Guid userId)
+        [HttpGet("user-bets")]
+        public async Task<List<GameBetDto>> GetUserBets(Guid userId)
         {
             return await _repo.GetUserBets(userId);
         }

@@ -1,4 +1,5 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Core.Dtos;
+using Check24.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace Check24.Core.dtos
         public Guid CommunityId { get; set; }
         public string CommunityName { get; set; } 
         public int CommunityPoints { get; set; }
-        public List<User> Members { get; set; }
+        public List<UserDto> Members { get; set; }
     }
 }

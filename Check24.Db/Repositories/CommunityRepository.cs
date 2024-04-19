@@ -1,4 +1,6 @@
 ﻿using Check24.Core;
+using Check24.Core.dtos;
+using Check24.Core.Dtos;
 using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -47,19 +49,35 @@ namespace Check24.Db.Repositories
             community.CommunityPoints = communityPoints;
         }
 
-        public async Task<List<User>> GetCommunityUserRanking(Guid communityId)
+        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid communityId)
         {
-            // dto mit communityname, communitypoints, user
-            var userRankings = await _context.UserCommunities
-                .Where(uc => uc.CommunityId == communityId)
-                .Include(uc => uc.Community!.CommunityName)
-                .Include(uc => uc.Community!.CommunityPoints)
-                .Select(uc => uc.User)
-                .OrderByDescending(u => u.Points)
-                .ThenBy(u => u.RegistrationDate)
-                .ToListAsync();
+            var community = await _context.Communities.FindAsync(communityId);
 
-            return userRankings!;
+            var userCommunities = await _context.UserCommunities
+               .Where(uc => uc.CommunityId == communityId)
+               .ToListAsync();
+         
+            var userList = await _context.Users
+                    .Where(u => userCommunities.Select(uc => uc.UserId).Contains(u.UserId))
+                    .OrderByDescending(u => u.Points)
+                    .ThenBy(u => u.RegistrationDate)
+                    .ToListAsync();
+
+            var members = userList.Select(user => new UserDto
+            {
+                Points = user.Points,
+                Name = user.Username,
+                RegistrationDate = user.RegistrationDate
+            }).ToList();
+
+            var communityMembers =new CommunityMembersDto
+            {
+                Members = members,
+                CommunityName = community.CommunityName,
+                CommunityPoints = community.CommunityPoints
+            };
+
+            return communityMembers!;
         }
 
     }

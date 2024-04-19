@@ -43,7 +43,7 @@ namespace Check24.Api.Controllers
             return await _repo.Login(userName);
         }
 
-        [HttpGet("{UserId}/rank")]
+        [HttpGet("rank")]
         public async Task<User> GetUserRank(string userName)
         {
             return await _repo.GetUserRank(userName);
