@@ -2,6 +2,7 @@
 using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Check24.Db;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System.Runtime.InteropServices;
 
@@ -34,6 +35,12 @@ namespace Check24.Db.Repositories
             user.Bets.Add(bet);
             _context.Bets.Add(bet);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Bet>> GetUserBets(Guid userId)
+        {
+            var allBets = await _context.Bets.Where(b => b.UserId == userId).Include(b => b.Game).ToListAsync();
+            return allBets;
         }
     }
 }

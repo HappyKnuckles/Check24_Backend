@@ -5,6 +5,7 @@ namespace Check24.Core.Interfaces
     public interface IBetRepository : IRepository<Bet>
     {
         Task PlaceBet(int homeGoals, int awayGoals, int gameId, Guid userId);
+        Task<List<Bet>> GetUserBets(Guid userId);
 
     }
 }

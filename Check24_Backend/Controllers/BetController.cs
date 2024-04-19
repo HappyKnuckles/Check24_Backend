@@ -43,5 +43,11 @@ namespace Check24.Api.Controllers
         {
             await _repo.PlaceBet(homeGoals, awayGoals, gameId, userId);
         }
+
+        [HttpGet("{id}/bets")]
+        public async Task<List<Bet>> GetUserBets(Guid userId)
+        {
+            return await _repo.GetUserBets(userId);
+        }
     }
 }

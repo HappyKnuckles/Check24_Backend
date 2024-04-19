@@ -31,7 +31,7 @@ namespace Check24.Db.Repositories
             {
                 User = user,
                 Community = community,
-                UserCommunityId = new Guid() 
+                UserCommunityId = new Guid()
             };
 
             user.UserCommunities.Add(userCommunity);
@@ -49,8 +49,11 @@ namespace Check24.Db.Repositories
 
         public async Task<List<User>> GetCommunityUserRanking(Guid communityId)
         {
+            // dto mit communityname, communitypoints, user
             var userRankings = await _context.UserCommunities
-                .Where(uc => uc.CommunityId == communityId) 
+                .Where(uc => uc.CommunityId == communityId)
+                .Include(uc => uc.Community!.CommunityName)
+                .Include(uc => uc.Community!.CommunityPoints)
                 .Select(uc => uc.User)
                 .OrderByDescending(u => u.Points)
                 .ThenBy(u => u.RegistrationDate)
