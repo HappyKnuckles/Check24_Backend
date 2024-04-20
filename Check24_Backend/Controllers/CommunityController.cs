@@ -45,16 +45,28 @@ namespace Check24.Api.Controllers
         }
 
 
-        [HttpPut("set-points")]
-        public async Task SetCommunityPoints(Community community)
+        [HttpPost("set-points")]
+        public async Task SetCommunityPoints(Guid communityId)
         {
-            await _repo.SetCommunityPoints(community);
+            await _repo.SetCommunityPoints(communityId);
         }
 
         [HttpGet("ranking")]
-        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid communityId)
+        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid? communityId)
         {
             return await _repo.GetCommunityUserRanking(communityId);
+        }
+
+        [HttpGet("communites-without-user")]
+        public async Task<List<Community>> GetAllCommunitiesWithoutUser(Guid userId)
+        {
+            return await _repo.GetAllCommunitiesWithoutUser(userId);
+        }
+
+        [HttpPost("create-and-join-community")]
+        public async Task CreateAndJoinCommunity(Guid userId, string communityName)
+        {
+            await _repo.CreateAndJoinCommunity(userId, communityName);
         }
     }
 }

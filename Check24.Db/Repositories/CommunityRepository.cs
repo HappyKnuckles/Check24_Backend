@@ -12,6 +12,33 @@ namespace Check24.Db.Repositories
 
         public CommunityRepository(Check24Context context) : base(context) { }
 
+        public async Task CreateAndJoinCommunity(Guid userId, string communityName)
+        {
+            Community newCommunity = new()
+            {
+                CommunityId = new Guid(),
+                CommunityName = communityName,
+                CommunityPoints = 0,
+            };
+            await _context.AddAsync(newCommunity);
+            await _context.SaveChangesAsync();
+            await JoinCommunity(userId, newCommunity.CommunityId);
+
+        }
+        public async Task<List<Community>> GetAllCommunitiesWithoutUser(Guid userId)
+        {
+            var userCommunityIds = await _context.UserCommunities
+                .Where(uc => uc.UserId == userId)
+                .Select(uc => uc.CommunityId)
+                .ToListAsync();
+
+            var communitiesWithoutUser = await _context.Communities
+                .Where(c => !userCommunityIds.Contains(c.CommunityId))
+                .ToListAsync();
+
+            return communitiesWithoutUser;
+        }
+
         public async Task JoinCommunity(Guid userId, Guid communityId)
         {
             var user = _context.Users.Where(u => u.UserId == userId).FirstOrDefault();
@@ -37,48 +64,78 @@ namespace Check24.Db.Repositories
             };
 
             user.UserCommunities.Add(userCommunity);
-            await SetCommunityPoints(community);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();            
+            await SetCommunityPoints(community.CommunityId);
         }
-        public async Task SetCommunityPoints(Community community)
+        public async Task SetCommunityPoints(Guid communityId)
         {
             var communityPoints = await _context.UserCommunities
-                .Where(uc => uc.CommunityId == community.CommunityId)
+                .Where(uc => uc.CommunityId == communityId)
                 .SumAsync(uc => uc.User!.Points ?? 0);
 
-            community.CommunityPoints = communityPoints;
-        }
-
-        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid communityId)
-        {
             var community = await _context.Communities.FindAsync(communityId);
 
-            var userCommunities = await _context.UserCommunities
-               .Where(uc => uc.CommunityId == communityId)
-               .ToListAsync();
-         
-            var userList = await _context.Users
+            community!.CommunityPoints = communityPoints;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid? communityId)
+        {
+            if (communityId == null)
+            {
+                var userList = await _context.Users
+                    .OrderByDescending(u => u.Points)
+                    .ThenBy(u => u.RegistrationDate)
+                    .ToListAsync();
+
+                var members = userList.Select(user => new UserDto
+                {
+                    Points = user.Points,
+                    Name = user.Username,
+                    RegistrationDate = user.RegistrationDate
+                }).ToList();
+
+                var communityMembers = new CommunityMembersDto
+                {
+                    Members = members,
+                    CommunityName = "",
+                    CommunityPoints = 0
+                };
+
+                return communityMembers;
+            }
+            else
+            {
+                var community = await _context.Communities.FindAsync(communityId);
+
+                var userCommunities = await _context.UserCommunities
+                    .Where(uc => uc.CommunityId == communityId)
+                    .ToListAsync();
+
+                var userList = await _context.Users
                     .Where(u => userCommunities.Select(uc => uc.UserId).Contains(u.UserId))
                     .OrderByDescending(u => u.Points)
                     .ThenBy(u => u.RegistrationDate)
                     .ToListAsync();
 
-            var members = userList.Select(user => new UserDto
-            {
-                Points = user.Points,
-                Name = user.Username,
-                RegistrationDate = user.RegistrationDate
-            }).ToList();
+                var members = userList.Select(user => new UserDto
+                {
+                    Points = user.Points,
+                    Name = user.Username,
+                    RegistrationDate = user.RegistrationDate
+                }).ToList();
 
-            var communityMembers =new CommunityMembersDto
-            {
-                Members = members,
-                CommunityName = community.CommunityName,
-                CommunityPoints = community.CommunityPoints
-            };
+                var communityMembers = new CommunityMembersDto
+                {
+                    Members = members,
+                    CommunityName = community.CommunityName,
+                    CommunityPoints = community.CommunityPoints
+                };
 
-            return communityMembers!;
+                return communityMembers;
+            }
         }
+
 
     }
 }
