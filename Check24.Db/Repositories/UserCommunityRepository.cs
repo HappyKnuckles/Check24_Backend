@@ -37,13 +37,13 @@ namespace Check24.Db.Repositories
                     Points = user.Points,
                     Name = user.Username,
                     RegistrationDate = user.RegistrationDate
-                }).ToList();
+                }).OrderByDescending(u => u.Points).ThenBy(u => u.RegistrationDate).ToList();
 
                 communityMembers.Add(new CommunityMembersDto
                 {
                     CommunityId = community!.CommunityId,
                     CommunityPoints = community.CommunityPoints,
-                    CommunityName = community.CommunityName, 
+                    CommunityName = community.CommunityName,
                     Members = members!
                 });
             }
