@@ -72,8 +72,9 @@ namespace Check24.Db.Repositories
 
             return points;
         }
-        public async Task UpdatePointsForGameResult(Game game)
+        public async Task UpdatePointsForGameResult(int gameId)
         {
+            var game = await _context.Games.FindAsync(gameId);
             int homeTeamGoals = (int)game.TeamHomeGoals!;
             int awayTeamGoals = (int)game.TeamAwayGoals!;
 

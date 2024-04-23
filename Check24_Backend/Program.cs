@@ -1,4 +1,6 @@
 using Check24.Api;
+using Check24.Api.Hubs;
+using Check24.Core;
 using Check24.Core.Interfaces;
 using Check24.Db;
 using Check24.Db.Repositories;
@@ -17,6 +19,7 @@ builder.Services.AddDbContext<Check24Context>(options =>
 
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -38,6 +41,8 @@ builder.Services.AddCors(policyBuilder =>
 
 var app = builder.Build();
 
+app.MapHub<AllHub>("/allhub");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -51,5 +56,8 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
 
 app.Run();

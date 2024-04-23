@@ -79,6 +79,15 @@ namespace Check24.Db.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task SetAllCommunityPoints()
+        {
+            var allCommunities = await _context.Communities.ToListAsync();
+            foreach (var community in allCommunities)
+            {
+                await SetCommunityPoints(community.CommunityId);
+            }
+        }
+
         public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid? communityId)
         {
             if (communityId == null)

@@ -6,7 +6,9 @@ namespace Check24.Db.Repositories
 {
     public class GameRepository : Repository<Game>, IGameRepository
     {
-        public GameRepository(Check24Context context) : base(context) { }
+
+        public GameRepository(Check24Context context) : base(context) { 
+        }
 
         public async Task<List<Game>> GetGamesWithoutBet(Guid userId)
         {
@@ -15,6 +17,17 @@ namespace Check24.Db.Repositories
                     .ToListAsync();
 
             return gamesWithoutBets;
+        }
+
+        public async Task SetGoal(bool teamAway, int gameId)
+        {
+            var game = await _context.Games.FindAsync(gameId);
+            if (teamAway)
+            {
+                game.TeamAwayGoals++;
+            } else game.TeamHomeGoals++;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

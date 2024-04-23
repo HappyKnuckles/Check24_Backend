@@ -1,6 +1,9 @@
-﻿using Check24.Core.Entities;
+﻿using Check24.Api.Hubs;
+using Check24.Core;
+using Check24.Core.Entities;
 using Check24.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Check24.Api.Controllers
 {
@@ -9,9 +12,12 @@ namespace Check24.Api.Controllers
     public class GameController : ControllerBase
     {
         private readonly IGameRepository _repo;
-        public GameController(IGameRepository repo)
+        private readonly IHubContext<AllHub> _allHubContext;
+
+        public GameController(IGameRepository repo, IHubContext<AllHub> allHubContext)
         {
             _repo = repo;
+            _allHubContext = allHubContext;
         }
 
         [HttpGet]
@@ -42,5 +48,13 @@ namespace Check24.Api.Controllers
         {
             return await _repo.GetGamesWithoutBet(userId);
         }
+
+        [HttpPost("goal")]
+        public async Task SetGoal(bool teamAway, int gameId)
+        {
+            await _repo.SetGoal(teamAway, gameId);
+            var game = await _repo.GetById(gameId);
+        }
+
     }
 }
