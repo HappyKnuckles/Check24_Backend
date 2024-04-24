@@ -25,9 +25,8 @@ namespace Check24.Db.Repositories
                 BetTimestamp = DateTime.Now
             };
 
-            var game = await _context.Games.FindAsync(gameId) ?? throw new InvalidOperationException("The specified game does not exist.");
+            var game = await _context.Games.Where(g => g.GameId == gameId).Include(g => g.Bets).FirstOrDefaultAsync() ?? throw new InvalidOperationException("The specified game does not exist.");
             var user = await _context.Users.FindAsync(userId) ?? throw new InvalidOperationException("The specified user does not exist.");
-
             game.Bets.Add(bet);
 
             bet.Game = game;
@@ -61,6 +60,64 @@ namespace Check24.Db.Repositories
                 });
             }
             return betsWithGames;
+        }
+
+        public int CalculatePointsForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
+        {
+            int points = 0;
+
+            if (bet.HomeTeamGoals == homeTeamGoals && bet.AwayTeamGoals == awayTeamGoals)
+            {
+                points = 8;
+            }
+            else if (bet.HomeTeamGoals - bet.AwayTeamGoals == Math.Abs(homeTeamGoals - awayTeamGoals) && homeTeamGoals != awayTeamGoals)
+            {
+                points = 6;
+            }
+            else if ((bet.HomeTeamGoals > bet.AwayTeamGoals && homeTeamGoals > awayTeamGoals) ||
+                     (bet.HomeTeamGoals == bet.AwayTeamGoals && homeTeamGoals == awayTeamGoals) ||
+                     (bet.HomeTeamGoals < bet.AwayTeamGoals && homeTeamGoals < awayTeamGoals))
+            {
+                points = 4;
+            }
+            else
+            {
+                points = 0;
+            }
+
+            return points;
+        }
+        public async Task UpdatePointsForGameResult(int gameId)
+        {
+            var game = await _context.Games
+                .Where(g => g.GameId == gameId)
+                .Include(g => g.Bets)
+                .ThenInclude(b => b.User)
+                .FirstOrDefaultAsync();
+
+            int homeTeamGoals = (int)game.TeamHomeGoals!;
+            int awayTeamGoals = (int)game.TeamAwayGoals!;
+
+            foreach (var bet in game.Bets)
+            {
+                int pointsDifference = CalculatePointsDifferenceForBet(bet, homeTeamGoals, awayTeamGoals);
+
+                if (pointsDifference != 0)
+                {
+                    bet.User.Points += pointsDifference;
+                    _context.Entry(bet.User).State = EntityState.Modified;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        private int CalculatePointsDifferenceForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
+        {
+            int previousBetPoints = bet.BetPoints;
+            int newBetPoints = CalculatePointsForBet(bet, homeTeamGoals, awayTeamGoals);
+
+            return newBetPoints - previousBetPoints;
         }
     }
 }

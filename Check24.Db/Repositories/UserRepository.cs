@@ -46,49 +46,5 @@ namespace Check24.Db.Repositories
         {
             return await _context.Users.OrderByDescending(u => u.Points).ThenBy(u => u.RegistrationDate).ToListAsync();
         }
-
-        public int CalculatePointsForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
-        {
-            int points = 0;
-
-            if (bet.HomeTeamGoals == homeTeamGoals && bet.AwayTeamGoals == awayTeamGoals)
-            {
-                points = 8;
-            }
-            else if (bet.HomeTeamGoals - bet.AwayTeamGoals == Math.Abs(homeTeamGoals - awayTeamGoals) && homeTeamGoals != awayTeamGoals)
-            {
-                points = 6;
-            }
-            else if ((bet.HomeTeamGoals > bet.AwayTeamGoals && homeTeamGoals > awayTeamGoals) ||
-                     (bet.HomeTeamGoals == bet.AwayTeamGoals && homeTeamGoals == awayTeamGoals) ||
-                     (bet.HomeTeamGoals < bet.AwayTeamGoals && homeTeamGoals < awayTeamGoals))
-            {
-                points = 4;
-            }
-            else
-            {
-                points = 0;
-            }
-
-            return points;
-        }
-        public async Task UpdatePointsForGameResult(int gameId)
-        {
-            var game = await _context.Games.FindAsync(gameId);
-            int homeTeamGoals = (int)game.TeamHomeGoals!;
-            int awayTeamGoals = (int)game.TeamAwayGoals!;
-
-            foreach (var bet in game.Bets)
-            {
-                int points = CalculatePointsForBet(bet, homeTeamGoals, awayTeamGoals);
-
-                bet.User!.Points += points;
-
-                _context.Entry(bet.User).State = EntityState.Modified;
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
     }
 }

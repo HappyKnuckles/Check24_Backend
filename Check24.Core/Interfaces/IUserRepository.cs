@@ -7,6 +7,5 @@ namespace Check24.Core.Interfaces
         Task<User?> Login(string userName);
         Task<User> GetUserRank(string userName);
         Task<List<User>> GetLeaderboard();
-        Task UpdatePointsForGameResult(int gameId);
     }
 }

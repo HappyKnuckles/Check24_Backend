@@ -13,11 +13,15 @@ namespace Check24.Api.Controllers
     {
         private readonly IGameRepository _repo;
         private readonly IHubContext<AllHub> _allHubContext;
+        private readonly IBetRepository _betRepo;
+        private readonly ICommunityRepository _communityRepo;
 
-        public GameController(IGameRepository repo, IHubContext<AllHub> allHubContext)
+        public GameController(IGameRepository repo, IHubContext<AllHub> allHubContext, IBetRepository betRepo, ICommunityRepository communityRepo)
         {
             _repo = repo;
             _allHubContext = allHubContext;
+            _betRepo = betRepo;
+            _communityRepo = communityRepo;
         }
 
         [HttpGet]
@@ -53,8 +57,10 @@ namespace Check24.Api.Controllers
         public async Task SetGoal(bool teamAway, int gameId)
         {
             await _repo.SetGoal(teamAway, gameId);
-            var game = await _repo.GetById(gameId);
+            await _betRepo.UpdatePointsForGameResult(gameId);
+            await _communityRepo.SetAllCommunityPoints();
+            await _allHubContext.Clients.All.SendAsync("getCommunityUserRanking");
+            await _allHubContext.Clients.All.SendAsync("getGames");
         }
-
     }
 }

@@ -15,6 +15,7 @@ public partial class Bet
 
     [ForeignKey("Game")]
     public int GameId { get; set; }
+    public int BetPoints { get; set; }
 
     public int? HomeTeamGoals { get; set; }
 
