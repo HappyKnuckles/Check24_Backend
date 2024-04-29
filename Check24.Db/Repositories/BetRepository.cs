@@ -100,7 +100,7 @@ namespace Check24.Db.Repositories
 
             foreach (var bet in game.Bets)
             {
-                int pointsDifference = CalculatePointsDifferenceForBet(bet, homeTeamGoals, awayTeamGoals);
+                int pointsDifference = await CalculatePointsDifferenceForBet(bet, homeTeamGoals, awayTeamGoals);
 
                 if (pointsDifference != 0)
                 {
@@ -112,10 +112,12 @@ namespace Check24.Db.Repositories
             await _context.SaveChangesAsync();
         }
 
-        private int CalculatePointsDifferenceForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
+        private async Task<int> CalculatePointsDifferenceForBet(Bet bet, int homeTeamGoals, int awayTeamGoals)
         {
             int previousBetPoints = bet.BetPoints;
             int newBetPoints = CalculatePointsForBet(bet, homeTeamGoals, awayTeamGoals);
+            bet.BetPoints = newBetPoints;
+            await _context.SaveChangesAsync();
 
             return newBetPoints - previousBetPoints;
         }
