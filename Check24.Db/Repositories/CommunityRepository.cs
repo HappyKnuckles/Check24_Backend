@@ -104,7 +104,7 @@ namespace Check24.Db.Repositories
 
         public async Task<CommunityMembersDto> GetCommunityUserRanking(Guid? communityId)
         {
-            if (communityId == null)
+            if (communityId == null || communityId == Guid.Empty)
             {
                 var userList = await _context.Users
                     .OrderByDescending(u => u.Points)
