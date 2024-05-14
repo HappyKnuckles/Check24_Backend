@@ -19,7 +19,28 @@ namespace Check24.Db.Repositories
                 .Distinct()
                 .ToListAsync();
 
+            var globalCommunityMembers = await _context.Users
+                .OrderByDescending(u => u.Points)
+                .ThenBy(u => u.RegistrationDate)
+                .ToListAsync();
+
             var communityMembers = new List<CommunityMembersDto>();
+
+            var globalCommunityPoints = globalCommunityMembers.Sum(u => u.Points);
+            var globalMembers = globalCommunityMembers.Select(user => new UserDto
+            {
+                Points = user.Points,
+                Name = user.Username,
+                RegistrationDate = user.RegistrationDate
+            }).OrderByDescending(u => u.Points).ThenBy(u => u.RegistrationDate).ToList();
+
+            communityMembers.Add(new CommunityMembersDto
+            {
+                CommunityId = Guid.Empty,
+                CommunityPoints = (int)globalCommunityPoints,
+                CommunityName = "Global",
+                Members = globalMembers
+            });
 
             foreach (var communityId in userCommunities)
             {
