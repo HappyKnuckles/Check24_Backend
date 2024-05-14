@@ -14,6 +14,8 @@ public partial class User
     public int? Points { get; set; }
 
     public DateTime RegistrationDate { get; set; }
+    public int CommunityCount { get; set; }
+
 
     public virtual ICollection<Bet> Bets { get; set; } = new List<Bet>();
 

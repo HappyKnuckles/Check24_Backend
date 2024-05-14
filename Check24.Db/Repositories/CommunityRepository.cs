@@ -47,7 +47,7 @@ namespace Check24.Db.Repositories
             {
                 throw new CustomException("User or community cannot be null");
             }
-            if (user.UserCommunities.Count >= 5)
+            if (user.CommunityCount >= 5)
             {
                 throw new CustomException("Too many communites");
             }
