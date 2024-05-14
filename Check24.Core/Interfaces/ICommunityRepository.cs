@@ -10,6 +10,7 @@ namespace Check24.Core.Interfaces
         Task<CommunityMembersDto> GetCommunityUserRanking(Guid? communityId);
         Task<List<Community>> GetAllCommunitiesWithoutUser(Guid userId);
         Task CreateAndJoinCommunity(Guid userId, string communityName);
+        Task LeaveCommunity(Guid userId, Guid communityId);
 
         Task SetAllCommunityPoints();
     }

@@ -64,9 +64,23 @@ namespace Check24.Db.Repositories
             };
 
             user.UserCommunities.Add(userCommunity);
+            user.CommunityCount++;
             await _context.SaveChangesAsync();            
             await SetCommunityPoints(community.CommunityId);
         }
+        
+        public async Task LeaveCommunity(Guid userId, Guid communityId)
+        {
+            var user = _context.Users.Where(u => u.UserId == userId).FirstOrDefault();
+            var community = _context.Communities.Where(c => c.CommunityId == communityId).FirstOrDefault();
+            var userCommunity = await _context.UserCommunities.Where(uc => uc.UserId == userId && uc.CommunityId == communityId).FirstOrDefaultAsync();
+
+            user.UserCommunities.Remove(userCommunity);
+            user.CommunityCount--;
+            await _context.SaveChangesAsync();
+            await SetCommunityPoints(community.CommunityId);
+        }
+
         public async Task SetCommunityPoints(Guid communityId)
         {
             var communityPoints = await _context.UserCommunities

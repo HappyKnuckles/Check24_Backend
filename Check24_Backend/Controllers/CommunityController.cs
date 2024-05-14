@@ -44,6 +44,11 @@ namespace Check24.Api.Controllers
             await _repo.JoinCommunity(userId, communityId);
         }
 
+        [HttpPost("leave-community")]
+        public async Task LeaveCommunity(Guid userId, Guid communityId)
+        {
+            await _repo.LeaveCommunity(userId, communityId);
+        }
 
         [HttpPost("set-points")]
         public async Task SetCommunityPoints(Guid communityId)
