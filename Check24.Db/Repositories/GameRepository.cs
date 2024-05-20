@@ -12,8 +12,9 @@ namespace Check24.Db.Repositories
 
         public async Task<List<Game>> GetGamesWithoutBet(Guid userId)
         {
+            DateTime currentDateTime = DateTime.Now;
             var gamesWithoutBets = await _context.Games
-                    .Where(g => !g.Bets.Any(b => b.UserId == userId))
+                    .Where(g => g.GameStartsAt > currentDateTime && !g.Bets.Any(b => b.UserId == userId))
                     .ToListAsync();
 
             return gamesWithoutBets;
